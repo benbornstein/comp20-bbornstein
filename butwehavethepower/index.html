@@ -20,7 +20,7 @@
 	var vid = document.getElementById("butwehavethepower");
 
 	// Call the annotate function upon hitting play on the video, and then continue to call the function every second
-	vid.addEventListener("play", function() { setInterval(function(){ annotate() }, 1000) }, true);
+	vid.addEventListener("play", function() { setInterval(function() { annotate() }, 1000) }, true);
 
 	// Function name: annotate
 	// Function parameters: N/A
@@ -32,7 +32,7 @@
 
 		// Conditionals alter "lyrics" text below the video with specific lyrics (or lack thereof) depending on current time of video playback
 		if (vid.currentTime < 5.5) {
-			document.getElementById("lyrics").innerHTML = ""; 
+			document.getElementById("lyrics").innerHTML = "..."; 
 		} 
 
 		else if (vid.currentTime < 8) {
@@ -63,12 +63,12 @@
 			document.getElementById("lyrics").innerHTML = "We'll fight 'till the death";
 		}
 
-		else if (vid.currentTime < 27) {
+		else if (vid.currentTime < 26.5) {
 			document.getElementById("lyrics").innerHTML = "Or else fold like umbrellas.";
 		}
 
 		else if (vid.currentTime < 37.5) {
-			document.getElementById("lyrics").innerHTML = "";
+			document.getElementById("lyrics").innerHTML = "...";
 		}
 
 		else if (vid.currentTime < 40) {
@@ -88,7 +88,7 @@
 		}
 
 		else if (vid.currentTime < 52.5) {
-			document.getElementById("lyrics").innerHTML = "";
+			document.getElementById("lyrics").innerHTML = "...";
 		}
 
 		else if (vid.currentTime < 55) {
@@ -96,7 +96,7 @@
 		}
 
 		else if (vid.currentTime < 72) {
-			document.getElementById("lyrics").innerHTML = "";
+			document.getElementById("lyrics").innerHTML = "...";
 		}
 
 		else if (vid.currentTime < 74) {
@@ -127,8 +127,12 @@
 			document.getElementById("lyrics").innerHTML = "They have the plant";
 		}
 
-		else if (vid.currentTime < 90.5) {
+		else if (vid.currentTime < 91) {
 			document.getElementById("lyrics").innerHTML = "But we have the power.";
+		}
+
+		else if (vid.currentTime < tmax) {
+			document.getElementById("lyrics").innerHTML = "...";
 		}
 
 		else {

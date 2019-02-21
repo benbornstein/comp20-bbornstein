@@ -1,0 +1,29 @@
+/* This file contains styling for index.html */
+
+body {
+	font-family: Arial;
+	color: orange;
+	background-image: url("heronamedhomer.gif");
+	background-size: 300px;
+}
+
+h1 {
+	font-family: Stencil;
+	text-align: center;
+	font-weight: bold;
+	margin: 0;
+	font-size: 4em;
+}
+
+video {
+	display: block;
+	margin: 0 auto;
+}
+
+#lyrics {
+	font-family: serif;
+	font-weight: bold;
+	text-align: center;
+	padding-top: 0.25em;
+	font-size: 2em;
+}
