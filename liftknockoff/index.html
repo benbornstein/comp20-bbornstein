@@ -20,6 +20,7 @@
 		<div id="location"></div>
 
 		<script>
+			//Declaration of variables
 			var map;
 			var myLat;
 			var myLng;
@@ -27,6 +28,10 @@
 			var parseddata;
 			var firstpost;
 			var myLocation;
+			var nearestweinerdistance;
+			var nearestWeiner;
+			var nearestdistance;
+			var nearestLocation;
 
 			//Obtains current location coordinates and calls initMap and sendXMLHttpRequest functions
 			//Aided by: https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/google_maps/geolocation_map.html
@@ -35,15 +40,10 @@
 					myLat = somePos.coords.latitude;
 					myLng = somePos.coords.longitude;
 					myLocation = {lat: myLat, lng: myLng};
-					printLocation();
+					//printLocation();
 					initMap();
 					sendXMLHttpRequest();
 				});
-			}
-
-			function printLocation() {
-				elem = document.getElementById("location");
-				elem.innerHTML = '<p class="coordinates">' + myLat + ", " + myLng + "</p>";
 			}
 
 			//Creates map and centers it on current location
@@ -51,20 +51,19 @@
 			function initMap() {
         		map = new google.maps.Map(document.getElementById("map"), {
           		center: myLocation,
-          		zoom: 2
+          		zoom: 13
         		});
       		}
 
       		//Sends XMLHttpRequest to obtain locations of passengers or vehicles
       		//Aided by: https://stackoverflow.com/questions/9713058/send-post-data-using-xmlhttprequest
       		function sendXMLHttpRequest() {
-	      		// Declare and initialize variables relating to XMLHttpRequest
+	      		//Declare and initialize variables relating to XMLHttpRequest
 				var xhr = new XMLHttpRequest();
 				var params = "username=5KWpnAJN&lat=" + myLat + "&lng=" + myLng;
 
+				//Send proper header information along w/ request
 	      		xhr.open("POST", "https://hans-moleman.herokuapp.com/rides", true);
-
-	      		//Send proper header information along w/ request
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
 				//Parse responseText and store in data variable if readyState==4 and status is an "OK" 200
@@ -72,14 +71,12 @@
 				xhr.onreadystatechange = function() {
 				    if(xhr.readyState == 4 && xhr.status == 200) {
 				        rawdata = xhr.responseText;
-				        parseddata = JSON.parse(rawdata)
-				        console.log(rawdata);
+				        parseddata = JSON.parse(rawdata);
 				        populateMap();
 				        findNearest();
 				    }
 				}
-
-				//Send the required parameters
+				//Send required parameters
 				xhr.send(params);
 			}
 
@@ -87,12 +84,8 @@
 			//Aided by: https://developers.google.com/maps/documentation/javascript/adding-a-google-map?authuser=1 AND https://developers.google.com/maps/documentation/javascript/custom-markers
 			function populateMap() {
 				var myLocation = new google.maps.LatLng(myLat, myLng);
-			
-				console.log("entered filterData");
-				console.log(parseddata);						//ASK TAs HOW TO REFERENCE TITLE OF THE ARRAY
-				console.log(parseddata.passengers.length);
-				console.log(parseddata.passengers[0].username);
 
+				//Declare and initialize variables for icons
 				var weinermobileIcon = {
 					url: 'weinermobile.png',
 					scaledSize: new google.maps.Size(100, 100)
@@ -108,93 +101,147 @@
 					scaledSize: new google.maps.Size(35, 35)
 				};
 
+				//Create an info window
 				info = new google.maps.InfoWindow({ });
 
-				for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
-  					var position = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
-  					if(parseddata.passengers[i].username == "WEINERMOBILE") {
-  						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
-  						var marker = new google.maps.Marker({
-							position: position,  
-							icon: weinermobileIcon,
-							map: map,
-							infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
-						});	
-						console.log(parseddata.passengers[0].username);
-						
-						google.maps.event.addListener(marker, 'click', function() {
-							info.setContent(this.infoWindowContent);
-							info.open(map, this);
-						});
-						console.log("made a weinermobile");
-  					} else {							//DON'T FORGET TO EDIT THIS ONCE TAs ANSWER YOUR QUESTION SO IT WORKS FOR PASSENGERS & DRIVERS
-  						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
-  						var marker = new google.maps.Marker({
-							position: position, 
-							icon: passengerIcon,
-							map: map,
-							infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
-						});	
-						
-						google.maps.event.addListener(marker, 'click', function () {
-		                    info.setContent(this.infoWindowContent);
-		                    info.open(map, this);
-		                });
-
-						// google.maps.event.addListener(marker, 'click', function() {
-						// 	info.open(map, marker);
-						// });
-						console.log("made a passenger");
-  					}
-  				console.log(parseddata.passengers[i].lat);
-  				console.log(parseddata.passengers[i].lng);
+				//If statement executes code based on the array title (aka based on your status as a vehicle or passenger) and whether or not there is sufficient data to work with
+				if (parseddata.passengers.length > 0) {
+					//Iterate through the array, creating markers for passengers/cars as well as weinermobiles, contingent on whether you are looking for passengers or vehicles
+					for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
+						//Position of the new marker
+	  					var position = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
+	  					//If statement creates a weinermobile marker or passenger marker depending on the username associated with the array position; marker is also amended with info window content
+	  					if(parseddata.passengers[i].username == "WEINERMOBILE") {
+	  						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
+	  						var marker = new google.maps.Marker({
+								position: position,  
+								icon: weinermobileIcon,
+								map: map,
+								infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100 + '<b> miles</b>'
+							});	
+							//Opens info window upon clicking on marker
+							google.maps.event.addListener(marker, 'click', function() {
+								info.setContent(this.infoWindowContent);
+								info.open(map, this);
+							});
+	  					} else {
+	  						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
+	  						var marker = new google.maps.Marker({
+								position: position, 
+								icon: passengerIcon,
+								map: map,
+								infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100 + '<b> miles</b>'
+							});	
+	  						
+	  						//Opens info window upon clicking on marker
+							google.maps.event.addListener(marker, 'click', function () {
+			                    info.setContent(this.infoWindowContent);
+			                    info.open(map, this);
+			                });
+	  					}
+					}
+				} else if (parseddata.vehicles.length > 0) {
+					for (var i = 0, len = parseddata.vehicles.length; i < len; i++) {
+	  					var position = new google.maps.LatLng(parseddata.vehicles[i].lat, parseddata.vehicles[i].lng);
+	  					//If statement creates a weinermobile marker or vehicle marker depending on the username associated with the array position; marker is also amended with info window content
+	  					if(parseddata.vehicles[i].username == "WEINERMOBILE") {
+	  						var theirLocation = new google.maps.LatLng(parseddata.vehicles[i].lat, parseddata.vehicles[i].lng);
+	  						var marker = new google.maps.Marker({
+								position: position,  
+								icon: weinermobileIcon,
+								map: map,
+								infoWindowContent: '<b> Username: </b>' + parseddata.vehicles[i].username +  '<b> Distance from your location: </b> ' + (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100 + '<b> miles</b>'
+							});	
+							
+							//Opens info window upon clicking on marker
+							google.maps.event.addListener(marker, 'click', function() {
+								info.setContent(this.infoWindowContent);
+								info.open(map, this);
+							});
+	  					} else {
+	  						var theirLocation = new google.maps.LatLng(parseddata.vehicles[i].lat, parseddata.vehicles[i].lng);
+	  						var marker = new google.maps.Marker({
+								position: position, 
+								icon: carIcon,
+								map: map,
+								infoWindowContent: '<b> Username: </b>' + parseddata.vehicles[i].username +  '<b> Distance from your location: </b> ' + (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100 + '<b> miles</b>'
+							});	
+	  						
+	  						//Opens info window upon clicking on marker
+							google.maps.event.addListener(marker, 'click', function () {
+			                    info.setContent(this.infoWindowContent);
+			                    info.open(map, this);
+			                });
+	  					}
+					}
+				} else {
+					alert("No passenger or vehicle data.");
 				}
-				
-
-				// google.maps.event.addListener(marker, 'click', function () {
-    //                 info.setContent(this.content);
-    //                 info.open(map, this);
-    //             });
 			}
-
 			//Finds the nearest weinermobile and passenger/car
 			//Aided by: https://developers.google.com/maps/documentation/javascript/reference/geometry#spherical.computeDistanceBetween
 			function findNearest() {
-				console.log("entered findNearest");
 				//Declare and initialize nearestdistance variable to hold nearest distance to myLocation
 				var nearestdistance = 9999999;
-				
-				//Loop through the array, comparing each point with myLocation
-				for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
-					//If statement separates weinermobiles from cars/passengers
-					console.log(parseddata);
-					if(parseddata.passengers[i].username == "WEINERMOBILE") {
-						//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
-						var myLocation = new google.maps.LatLng(myLat, myLng);
-						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
-						//Compute distance and store in declared distance variable
-						var distance = google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation);
-						console.log(distance);
-						//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
-						if(distance < nearestdistance) {
-							var nearestweinerdistance = distance;
-							var nearestWeiner = theirLocation;
-						}
-					} else {
-						//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
-						var myLocation = new google.maps.LatLng(myLat, myLng);
-						var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
-						//Compute distance and store in declared distance variable
-						var distance = google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation);
-						console.log(distance);
-						//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestdistance with the current distance AND replace the current nearestLocation with the current theirLocation
-						if(distance < nearestdistance) {
-							var nearestdistance = distance;
-							var nearestLocation = theirLocation;
+				//If statement executes code based on the array title (aka based on your status as a vehicle or passenger) and whether or not there is sufficient data to work with
+				if (parseddata.passengers.length > 0) {
+					//Loop through the array, comparing each point with myLocation
+					for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
+						//If statement separates weinermobiles from cars/passengers
+						if(parseddata.passengers[i].username == "WEINERMOBILE") {
+							//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
+							var myLocation = new google.maps.LatLng(myLat, myLng);
+							var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
+							//Compute distance and store in declared distance variable
+							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
+							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
+							if(distance < nearestdistance) {
+								var nearestweinerdistance = distance;
+								var nearestWeiner = theirLocation;
+							}
+						} else {
+							//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
+							var myLocation = new google.maps.LatLng(myLat, myLng);
+							var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
+							//Compute distance and store in declared distance variable
+							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
+							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestdistance with the current distance AND replace the current nearestLocation with the current theirLocation
+							if(distance < nearestdistance) {
+								var nearestdistance = distance;
+								var nearestLocation = theirLocation;
+							}
 						}
 					}
-				console.log(nearestdistance);
-				console.log(nearestweinerdistance);
+				} else if (parseddata.vehicles.length > 0) {
+					//Loop through the array, comparing each point with myLocation
+					for (var i = 0, len = parseddata.vehicles.length; i < len; i++) {
+						//If statement separates weinermobiles from vehicles/passengers
+						if(parseddata.vehicles[i].username == "WEINERMOBILE") {
+							//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
+							var myLocation = new google.maps.LatLng(myLat, myLng);
+							var theirLocation = new google.maps.LatLng(parseddata.vehicles[i].lat, parseddata.vehicles[i].lng);
+							//Compute distance and store in declared distance variable
+							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
+							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
+							if(distance < nearestdistance) {
+								var nearestweinerdistance = distance;
+								var nearestWeiner = theirLocation;
+							}
+						} else {
+							//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
+							var myLocation = new google.maps.LatLng(myLat, myLng);
+							var theirLocation = new google.maps.LatLng(parseddata.vehicles[i].lat, parseddata.vehicles[i].lng);
+							//Compute distance and store in declared distance variable
+							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
+							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestdistance with the current distance AND replace the current nearestLocation with the current theirLocation
+							if(distance < nearestdistance) {
+								var nearestdistance = distance;
+								var nearestLocation = theirLocation;
+							}
+						}
+					}
+				} else {
+					alert("No passenger or vehicle data.");
 				}
 				//With distance information finally gathered, set up myLocation marker with unique icon and infowindow displaying required distances
 				//Aided by: https://stackoverflow.com/questions/3158598/google-maps-api-v3-adding-an-infowindow-to-each-marker
@@ -202,15 +249,17 @@
 					url: 'me.png',
 					scaledSize: new google.maps.Size(35, 35)
 				};
-
+				//Create a unique marker to represent my location
 				var marker = new google.maps.Marker({
 					position: myLocation, 
 					icon: myIcon,
 					map: map
 				});	
+				//Populate the info window with the distance from the nearest weinermobile and nearest passenger or car
 				marker.info = new google.maps.InfoWindow({
-					content: '<b>Distance to nearest Weinermobile: </b> ' + nearestweinerdistance + '<b> miles.</b>\n' + '<b>Distance to nearest passenger/car: </b>' + nearestdistance + '<b> miles</b>'
+					content: '<b>Distance to nearest Weinermobile: </b> ' + (nearestweinerdistance) + '<b> miles.</b>\n' + '<b>Distance to nearest passenger/car: </b>' + (nearestdistance) + '<b> miles.</b>'
 				});
+				//Show info window upon clicking on the myIcon marker
 				google.maps.event.addListener(marker, 'click', function() {
 					marker.info.open(map, marker);
 				});
