@@ -7,10 +7,7 @@
 	background-color: white;
 }
 
-h1 {
-	text-align: center;
-	margin: 0;
-}
+
 
 
 #contact_info {
@@ -23,3 +20,20 @@ h1 {
 	font-size: 1.25em;
 	text-decoration: underline;
 }*/
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+	text-align: center;
+	margin: 0;
+}
+
+#map {
+	height: 100%;
+}
+
+
