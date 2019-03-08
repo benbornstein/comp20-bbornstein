@@ -4,29 +4,76 @@
 
 <html lang="en">
 
-	<head>	
+	<head>
+		<link rel="shortcut icon" href=""> <!-- MAYBE REMOVE THIS BEFORE SUBMITTING; JUST TO KEEP BUG ERROR FROM HAPPENING -->
 		<meta charset="utf-8" /> <!-- metatag used to include character encoding-->
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<title>Private Car Service Map</title>
 		<link rel="stylesheet" href="style.css" type="text/css" /> <!-- link to cascading stylesheet -->
-
-	</head>
-
-	<body>
-		<h1>Private Car Service Map</h1>
-		<div id="map"></div>
-
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJYxO2wbRXnR7n3puWqFVtsrq8Q1MZE3U"></script>
 		<script>
+			//Declare variables for map, latitude, and longitude
 			var map;
+			var myLat;
+			var myLng;
+			
+			//Obtains current location coordinates and calls initMap and sendXMLHttpRequest functions
+			//Aided by: https://www.w3schools.com/jsref/prop_nav_geolocation.asp and https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/google_maps/geolocation_map.html
+			function getLocation() {
+				navigator.geolocation.getCurrentPosition(function(somePos) {
+					myLat = somePos.coords.latitude;
+					myLng = somePos.coords.longitude;
+					printLocation();
+					initMap();
+					sendXMLHttpRequest();
+				});
+			}
+
+			function printLocation() {
+				elem = document.getElementById("location");
+				elem.innerHTML = '<p class="coordinates">' + myLat + ", " + myLng + "</p>";
+			}
+
+			//Creates map and centers it on current location
+			//Aided by: https://developers.google.com/maps/documentation/javascript/tutorial
 			function initMap() {
         		map = new google.maps.Map(document.getElementById('map'), {
-          		center: {lat: 42.36, lng: -71.058},
+          		center: {lat: myLat, lng: myLng},
           		zoom: 12
         		});
       		}
-      	</script>
-      	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJYxO2wbRXnR7n3puWqFVtsrq8Q1MZE3U&callback=initMap"></script>
 
+      		//Sends XMLHttpRequest to obtain locations of passengers or vehicles
+      		//Aided by: https://stackoverflow.com/questions/9713058/send-post-data-using-xmlhttprequest
+      		function sendXMLHttpRequest() {
+	      		// Declare and initialize variables relating to XMLHttpRequest
+				var xhr = new XMLHttpRequest();
+				var params = "username=5KWpnAJN&lat=" + myLat + "&lng=" + myLng;
+
+	      		//S
+	      		xhr.open("POST", "https://hans-moleman.herokuapp.com/rides", true);
+
+	      		//Send proper header information along w/ request
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+				//Receive response text in an alert box
+				xhr.onreadystatechange = function() {
+				    if(xhr.readyState == 4 && xhr.status == 200) {
+				        alert(xhr.responseText);
+				    }
+				}
+
+				//Send the required parameters
+				xhr.send(params);
+			}
+      	</script>
+	</head>
+
+	<!-- Call function to obtain current location coordinates upon loading the page -->
+	<body onload="getLocation()">
+		<h1>Private Car Service Map</h1>
+		<div id="map"></div>
+		<div id="location"></div>
 	</body>
 
 </html>
