@@ -11,7 +11,7 @@
 		<title>Private Car Service Map</title>
 		<link rel="stylesheet" href="style.css" type="text/css" /> <!-- link to cascading stylesheet -->
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPojTa63q8kmN6J19VNv6Z8-hSHq2uK8I&libraries=geometry"></script>
-
+		<!--<script src="nameoffile.js"></script> -->
 	</head>
 
 	<body onload="getLocation()">
@@ -108,6 +108,8 @@
 					scaledSize: new google.maps.Size(35, 35)
 				};
 
+				info = new google.maps.InfoWindow({ });
+
 				for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
   					var position = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
   					if(parseddata.passengers[i].username == "WEINERMOBILE") {
@@ -115,14 +117,14 @@
   						var marker = new google.maps.Marker({
 							position: position,  
 							icon: weinermobileIcon,
-							map: map
+							map: map,
+							infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
 						});	
-						marker.info = new google.maps.InfoWindow({
-							content: '<b>Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
-						});
-
+						console.log(parseddata.passengers[0].username);
+						
 						google.maps.event.addListener(marker, 'click', function() {
-							marker.info.open(map, marker);
+							info.setContent(this.infoWindowContent);
+							info.open(map, this);
 						});
 						console.log("made a weinermobile");
   					} else {							//DON'T FORGET TO EDIT THIS ONCE TAs ANSWER YOUR QUESTION SO IT WORKS FOR PASSENGERS & DRIVERS
@@ -130,20 +132,29 @@
   						var marker = new google.maps.Marker({
 							position: position, 
 							icon: passengerIcon,
-							map: map
+							map: map,
+							infoWindowContent: '<b> Username: </b>' + parseddata.passengers[i].username +  '<b> Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
 						});	
-						marker.info = new google.maps.InfoWindow({
-							content: '<b>Distance from your location: </b> ' + google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation) + '<b> miles</b>'
-						});
+						
+						google.maps.event.addListener(marker, 'click', function () {
+		                    info.setContent(this.infoWindowContent);
+		                    info.open(map, this);
+		                });
 
-						google.maps.event.addListener(marker, 'click', function() {
-							marker.info.open(map, marker);
-						});
+						// google.maps.event.addListener(marker, 'click', function() {
+						// 	info.open(map, marker);
+						// });
 						console.log("made a passenger");
   					}
   				console.log(parseddata.passengers[i].lat);
   				console.log(parseddata.passengers[i].lng);
 				}
+				
+
+				// google.maps.event.addListener(marker, 'click', function () {
+    //                 info.setContent(this.content);
+    //                 info.open(map, this);
+    //             });
 			}
 
 			//Finds the nearest weinermobile and passenger/car
@@ -156,6 +167,7 @@
 				//Loop through the array, comparing each point with myLocation
 				for (var i = 0, len = parseddata.passengers.length; i < len; i++) {
 					//If statement separates weinermobiles from cars/passengers
+					console.log(parseddata);
 					if(parseddata.passengers[i].username == "WEINERMOBILE") {
 						//Declare myLocation and theirLocation through as LatLng objects to ensure compatibility with computeDistanceBetween function
 						var myLocation = new google.maps.LatLng(myLat, myLng);
