@@ -173,6 +173,7 @@
 			function findNearest() {
 				//Declare and initialize nearestdistance variable to hold nearest distance to myLocation
 				var nearestdistance = 9999999;
+				var nearestweinerdistance = 9999999;
 				//If statement executes code based on the array title (aka based on your status as a vehicle or passenger) and whether or not there is sufficient data to work with
 				if (parseddata.passengers.length > 0) {
 					//Loop through the array, comparing each point with myLocation
@@ -184,9 +185,11 @@
 							var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
 							//Compute distance and store in declared distance variable
 							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
+							console.log(distance);
 							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
-							if(distance < nearestdistance) {
+							if(distance < nearestweinerdistance) {
 								var nearestweinerdistance = distance;
+								console.log(nearestweinerdistance);
 								var nearestWeiner = theirLocation;
 							}
 						} else {
@@ -213,7 +216,7 @@
 							//Compute distance and store in declared distance variable
 							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
 							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
-							if(distance < nearestdistance) {
+							if(distance < nearestweinerdistance) {
 								var nearestweinerdistance = distance;
 								var nearestWeiner = theirLocation;
 							}
