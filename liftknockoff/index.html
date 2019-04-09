@@ -59,7 +59,7 @@
 				var xhr = new XMLHttpRequest();
 				var params = "username=5KWpnAJN&lat=" + myLat + "&lng=" + myLng;
 				//Send proper header information along w/ request
-	      		xhr.open("POST", "https://hans-moleman.herokuapp.com/rides", true);
+	      		xhr.open("POST", "https://hidden-beach-81090.herokuapp.com/rides", true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				//Parse responseText and store in data variable if readyState==4 and status is an "OK" 200
 				//Aided by: https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/ajax/messages.html AND https://www.w3schools.com/js/js_json_parse.asp
@@ -156,7 +156,6 @@
 								map: map,
 								infoWindowContent: '<b> Username: </b>' + parseddata.vehicles[i].username +  '<b> Distance from your location: </b> ' + (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100 + '<b> miles</b>'
 							});	
-	  						
 	  						//Opens info window upon clicking on marker
 							google.maps.event.addListener(marker, 'click', function () {
 			                    info.setContent(this.infoWindowContent);
@@ -185,11 +184,9 @@
 							var theirLocation = new google.maps.LatLng(parseddata.passengers[i].lat, parseddata.passengers[i].lng);
 							//Compute distance and store in declared distance variable
 							var distance = (Math.round(((google.maps.geometry.spherical.computeDistanceBetween(myLocation, theirLocation))/5280)*100))/100;
-							console.log(distance);
 							//If the newly calculated distance is shorter than the current nearestdistance, replace the current nearestweinerdistance with the current distance AND replace the current nearestWeiner with the current theirLocation
 							if(distance < nearestweinerdistance) {
 								var nearestweinerdistance = distance;
-								console.log(nearestweinerdistance);
 								var nearestWeiner = theirLocation;
 							}
 						} else {
