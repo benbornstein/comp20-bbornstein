@@ -59,7 +59,7 @@
 				var xhr = new XMLHttpRequest();
 				var params = "username=5KWpnAJN&lat=" + myLat + "&lng=" + myLng;
 				//Send proper header information along w/ request
-	      		xhr.open("POST", "https://hidden-beach-81090.herokuapp.com/rides:5000", true);
+	      		xhr.open("POST", "https://hidden-beach-81090.herokuapp.com/rides", true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				//Parse responseText and store in data variable if readyState==4 and status is an "OK" 200
 				//Aided by: https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/ajax/messages.html AND https://www.w3schools.com/js/js_json_parse.asp
