@@ -59,6 +59,7 @@
 				var xhr = new XMLHttpRequest();
 				var params = "username=5KWpnAJN&lat=" + myLat + "&lng=" + myLng;
 				//Send proper header information along w/ request
+				console.log("testing text");
 	      		xhr.open("POST", "https://hidden-beach-81090.herokuapp.com/rides", true);
 				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				//Parse responseText and store in data variable if readyState==4 and status is an "OK" 200
@@ -66,6 +67,8 @@
 				xhr.onreadystatechange = function() {
 				    if(xhr.readyState == 4 && xhr.status == 200) {
 				        rawdata = xhr.responseText;
+				        console.log("Printing the data here!!");
+				        console.log(rawdata);
 				        parseddata = JSON.parse(rawdata);
 				        populateMap();
 				        findNearest();
