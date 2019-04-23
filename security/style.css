@@ -5,9 +5,9 @@ body {
 	color: black;
 }
 
-h1 {
+h1, h2 {
+	font-family: Arial;
 	text-align: center;
 	font-weight: bold;
 	margin: 0;
-	font-size: 4em;
 }
