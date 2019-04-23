@@ -1,0 +1,13 @@
+/* This file contains styling for index.html */
+
+body {
+	font-family: Menlo;
+	color: black;
+}
+
+h1 {
+	text-align: center;
+	font-weight: bold;
+	margin: 0;
+	font-size: 4em;
+}
