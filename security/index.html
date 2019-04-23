@@ -9,26 +9,93 @@
 <body>
 
 	<h1>Security Assessment</h1>
-	<h2>Assessor: Ben Bornstein</h2>
+	<h2>Security Consultant: Ben Bornstein</h2>
 	<h2>Target: Vichka Fonarev</h2>
 
 	<h3>1. Introduction</h3>
 	<p>
-		Text here
+		I was hired to assess the security of the target's application. The application is used in conjunction with a private car service. The client-side displays a map of passengers and vehicles and enables the submission of location data regarding either vehicles or passengers, depending on the user's status as one or the other. The application allows passengers to find nearby vehicles which can pick them up, and alternatively it allows drivers/vehicles to find nearby passengers which they may be able to service. It takes a username, latitude, and longitude as inputs and returns the usernames, latitudes, and longitudes of nearby passengers/vehicles that were active within the last three minutes.
 	</p>
 
 	<h3>2. Methodology</h3>
 	<p>
-		Text here
+		In pen testing the application, I utilized curl in conjunction with a two-step method that was recommended by Ming Chow. After conducting initial research on types of attacks and how one might test for the associated vulnerabilities, I utilized curl to send information to the target's MongoDB and then used the target's GET pathways to test for additional vulnerabilities. In other words, I conducted a black box test first. Upon completing this, I obtained the target's source code to confirm the results of my black box testing, in other words known as a white box test. This two step method (1. black box test 2. white box test) is how I approached my assessment. 
 	</p>
 
 	<h3>3. Abstract of Findings</h3>
 	<p>
-		Text here
+		Database injection; XSS
 	</p>
 
 	<h3>4. Issues</h3>
-	<p>
+	<p class=issueheading>ISSUE 1: DATABASE INJECTION</p>
+	<p class=subheading>Location</p>
+	<p class=description>
+		This issue appears in the MongoDB (MongoLab) used in conjunction with heroku (or, if testing locally, in the local MongoDB). Within the code, the problem area is within the POST route (/rides) as this is where user inputs are taken in. 
+	</p>
+	<p class=subheading>Severity: HIGH</p>
+	<p class=description>
+		The severity level of this vulnerability is HIGH because injection of hostile code into a database may result in the loss or corruption of stored data, as well as a complete takeover of the host, potentially. This vulnerability, after all, allows bad actors to inject any sort of script into the database. This vulnerability may also open the application up to other vulnerabilities, such as Cross-Site Scripting (XSS).
+	</p>
+	<p class=subheading>Issue Description</p>
+	<p class=description>
+		I found this issue by black box testing the POST route with curl. This route takes in a user-inputted username, latitude, and longitude, as mentioned previously. When inputting the username field, one can pass a script through as a username. I was able to confirm this issue by accessing the target's mongolab, where the script was successfully stored. Please see the images in the next subheading for more context.
+	</p>
+	<p class=subheading>Proof of Vulnerability</p>
+	<p class=description>
+		<img
+			src="me_comp20.jpg" alt="terminal_curl_code"/>
+		<img
+			src="me_comp20.jpg" alt="target_mongolab_proof"/>
+	</p>
+	<p class=subheading>Resolution</p>
+	<p class=description>
+		To protect against exploitation of such a vulnerability, the user may do the following (aided by https://www.owasp.org/index.php/Top_10_2013-A1-Injection and https://tuftsdev.github.io/WebProgramming/notes/web_security.html): 1) properly implement escaping as to prevent interpretation of code included in inputs (i.e. username should only take in reasonable USERNAMES; it should not interpret javascript syntax) 2) stricter whitelist input validation 3) avoid use of interpreters/APIs that utilize API with interpreters.
+	</p>
+
+	<p class=issueheading>ISSUE 2: XSS</p>
+	<p class=subheading>Location</p>
+	<p class=description>
+		This issue stacks upon the Database Injection issue (the first vulnerability allows for the exploitation of the second). It appears in the GET /passenger.json route within index.js, as well as in its corresponding URL, https://stormy-escarpment-32696.herokuapp.com/passenger.json. 
+	</p>
+	<p class=subheading>Severity: MEDIUM</p>
+	<p class=description>
+		The severity level of this vulnerability is MEDIUM due to a combination of its prevalence and potential impact. According to OWASP's 2013 Top 10 List (https://www.owasp.org/index.php/Top_10_2013-A3-Cross-Site_Scripting_(XSS)), XSS is the most common web application security flaw. Per the Top 10 List as well as the COMP20 supplementary notes on Web Security (https://tuftsdev.github.io/WebProgramming/notes/web_security.html), bad actors may utilize an XSS vulnerability to hijack user sessions, redirect users to malicious sites, steal cookie information, and, as Ming put it, just display annoying messages to users. That being said, this XSS vulnerability allows for "stored" XSS, which is considered to be the more dangerous of the two XSS types (the other being "reflected") because the previously-stored data persists.
+	</p>
+	<p class=subheading>Issue Description</p>
+	<p class=description>
+		I found this issue by black box testing the previously mentioned GET route. This involved inputting usernames which referenced javascript code that was previously injected into the database via the Database Injection vulnerability. By referencing this "username" script, the code is executed. In the case of my testing, I referenced a username containing a script which displays an alert box containing the word "hacked".
+	</p>
+	<p class=subheading>Proof of Vulnerability</p>
+	<p class=description>
+		<img
+			src="me_comp20.jpg" alt="browser_proof"/>
+	</p>
+	</p>
+	<p class=subheading>Resolution</p>
+	<p class=description>
+		Text here
+	</p>
+
+	<p class=issueheading>ISSUE 3: </p>
+	<p class=subheading>Location</p>
+	<p class=description>
+		Text here
+	</p>
+	<p class=subheading>Severity</p>
+	<p class=description>
+		Text here
+	</p>
+	<p class=subheading>Issue Description</p>
+	<p class=description>
+		Text here
+	</p>
+	<p class=subheading>Proof of Vulnerability</p>
+	<p class=description>
+		Text here
+	</p>
+	<p class=subheading>Resolution</p>
+	<p class=description>
 		Text here
 	</p>
 
@@ -38,9 +105,11 @@
 	</p>
 
 	<h3>6. References</h3>
-	<p>
-		Text here
-	</p>
+	<p>https://tuftsdev.github.io/WebProgramming/notes/web_security.html</p>
+	<p>https://www.owasp.org/index.php/Top_10_2013-Top_10</p>
+	<p>https://www.sans.org/top25-software-errors/</p>
+	<p>https://www.softwaretestinghelp.com/javascript-injection-tutorial/</p>
+	<p>https://www.veracode.com/security/sql-injection</p>
 
 
 </body>

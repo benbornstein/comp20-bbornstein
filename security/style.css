@@ -11,3 +11,16 @@ h1, h2 {
 	font-weight: bold;
 	margin: 0;
 }
+
+.issueheading {
+	font-weight:bold;
+}
+
+.subheading {
+	text-indent: 50px;
+	font-weight:bold;
+}
+
+.description {
+	text-indent: 50px;
+}
