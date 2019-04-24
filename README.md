@@ -1,15 +1,16 @@
 # Benjamin Bornstein - COMP20 Lab 8: Finalizing Your Learning Portfolio
 
 ## What is this purpose of this Git repository? (duh!)
-The purpose of this Git repository is to manage my work as it changes over time and allow me to revert to older iterations in the event of an emergency. 
+The purpose of this Git repository is to manage my work as it changes over time and allow me to revert to older iterations in the event of an emergency.
 
 ## What was your favorite lab or assignment and why?
-
+My favorite assignment was Assignment #2 as, in my opinion, it struck a good balance between the feeling of accomplishment one gets when achieving something and the frustration ond experiences when figuring out a problem. Additionally, Assignment #2 was the first time I felt that I truly created something interesting and potentially useful. Seeing the map populate with my icons and functional info boxes was highly satisfying.
 
 ## How much do you think you have grown from day 1 of this course to now?
-
+I feel that I have a much better understanding of how websites work than I did at day 1. In terms of the development of my web programming skillset, I am confident that the information I retain from this class will be useful both in my day-to-day life and if I ever decide to launch my own website/internet company. 
 
 ## What was the most important thing that you learned in this course? Cite two examples as evidence.
-
+I think that the most important thing I learned in this course is how to break down and compartmentalize problems, and situations overall, in a way that appears to be unique way to the computer science/software/tech industry. I am an Economics major with a minor in Chinese and, during my time at Tufts, I learned a lot about how to think through the policy implications and externalities of economic variables and I learned a lot about how language is developed and interpreted differently across cultures. But, when I took COMP11 two years ago, I was intrigued by the approach that this discipline takes to problem solving. While I decided to take COMP20 to gain web programming skills that may help me in the future and to exercise my "coding muscles," I was happy to rediscover this way of thinking and hope that I can take it with me going forward into the real world after I graduate next month. In addition to the example that I just discussed, a more easily digestable way that this way of thinking manifested itself for me in this class was while I worked on assignment 3. There were so many components to work with and, at times, this was overwhelming. When I encountered an issue, my mind began to race: was the issue in my curl syntax in the terminal? Or, perhaps, was it in the way I set up my MongoDB? Could it be in my server-side code or perhaps I made a mistake in my assignment 2 client-side code that was now influencing my ability to correctly implement something? Should I be running my python simplehttpserver to test this particular thing, or node.js? Eventually, it all clicked. It's a shame that I killed that grade over a var name misunderstanding, but it was a deeply insightful process nonetheless.
 
 ## Now that you have finished the course, what topic would you like to delve deeper into?
+For now, I hope to work toward retaining the skills that I have gained thus far. I am going to be an acquisitions analyst at a real estate firm after I graduate next month, so my day-to-day work will likely only involve some VBA as far as coding goes. As a result, I hope to continue developing my web programming skillset as more of a hobby/side-project. Perhaps someday I will take the entrepreneurial route and, when that day comes, I want to be prepared to build a website from scratch!
