@@ -52,7 +52,7 @@
 	</p>
 	<p class=subheading>Resolution:</p>
 	<p class=description>
-		To protect against exploitation of such a vulnerability, the user may do the following (aided by https://www.owasp.org/index.php/Top_10_2013-A1-Injection and https://tuftsdev.github.io/WebProgramming/notes/web_security.html): 1) properly implement escaping as to prevent interpretation of code included in inputs (i.e. username should only take in reasonable USERNAMES; it should not interpret javascript syntax) 2) stricter whitelist input validation 3) avoid use of interpreters/APIs that utilize API with interpreters.
+		To protect against exploitation of such a vulnerability, the user may do the following (aided by OWASP): 1) properly implement escaping as to prevent interpretation of code included in inputs (i.e. username should only take in reasonable USERNAMES; it should not interpret javascript syntax) 2) stricter whitelist input validation 3) avoid use of interpreters/APIs that utilize API with interpreters.
 	</p>
 
 	</br>
@@ -64,7 +64,7 @@
 	</p>
 	<p class=subheading>Severity:</p>
 	<p class=description>
-		The severity level of this vulnerability is MEDIUM due to a combination of its prevalence and potential impact. According to OWASP's 2013 Top 10 List (https://www.owasp.org/index.php/Top_10_2013-A3-Cross-Site_Scripting_(XSS)), XSS is the most common web application security flaw. Per the Top 10 List as well as the COMP20 supplementary notes on Web Security (https://tuftsdev.github.io/WebProgramming/notes/web_security.html), bad actors may utilize an XSS vulnerability to hijack user sessions, redirect users to malicious sites, steal cookie information, and, as Ming put it, just display annoying messages to users. That being said, this XSS vulnerability allows for "stored" XSS, which is considered to be the more dangerous of the two XSS types (the other being "reflected") because the previously-stored data persists.
+		The severity level of this vulnerability is MEDIUM due to a combination of its prevalence and potential impact. According to OWASP's 2013 Top 10 List (aided by OWASP), XSS is the most common web application security flaw. Per the Top 10 List as well as the COMP20 supplementary notes on Web Security, bad actors may utilize an XSS vulnerability to hijack user sessions, redirect users to malicious sites, steal cookie information, and, as Ming put it, just display annoying messages to users. That being said, this XSS vulnerability allows for "stored" XSS, which is considered to be the more dangerous of the two XSS types (the other being "reflected") because the previously-stored data persists.
 	</p>
 	<p class=subheading>Issue Description:</p>
 	<p class=description>
@@ -78,7 +78,7 @@
 	</p>
 	<p class=subheading>Resolution:</p>
 	<p class=description>
-		Per OWASP, XSS vulnerabilities can typically be resolved by properly escaping untrusted data dependent on where the data will be placed (i.e. data to be inputted into the HTML body, an attribute, a script, etc.). Whitelists also help protect against such attacks; while the target had a whitelist for vehicle inputs, there was no whitelist for passenger inputs and, as a result, the application became open to this vulnerability. OWASP also mentions the potential to protect against XSS attacks through the use of auto-sanitization libraries that assist in ensuring that user inputs comply with the application's rules. Additionally, OWASP points to the implementation of Content Security Policy (CSP), which is a W3C specification that allows restriction of resource loading; one of CSP's directives focuses on the prevention of reflected XSS, though there is no explicit mention of protection against stored XSS attacks (https://www.owasp.org/index.php/Content_Security_Policy).
+		Per OWASP, XSS vulnerabilities can typically be resolved by properly escaping untrusted data dependent on where the data will be placed (i.e. data to be inputted into the HTML body, an attribute, a script, etc.). Whitelists also help protect against such attacks; while the target had a whitelist for vehicle inputs, there was no whitelist for passenger inputs and, as a result, the application became open to this vulnerability. OWASP also mentions the potential to protect against XSS attacks through the use of auto-sanitization libraries that assist in ensuring that user inputs comply with the application's rules. Additionally, OWASP points to the implementation of Content Security Policy (CSP), which is a W3C specification that allows restriction of resource loading; one of CSP's directives focuses on the prevention of reflected XSS, though there is no explicit mention of protection against stored XSS attacks. Aided by OWASP.
 	</p>
 
 	</br>
@@ -132,22 +132,24 @@
 	</p>
 	<p class=subheading>Resolution:</p>
 	<p class=description>
-		In this case, it is truly up to the target to decide whether or not this issue truly needs to be remedied for the purposes of this web application. That being said, to address this vulnerability, the target can encrypt all data inputs (using javascript) as they are added to their respective collections within the database. As the application only displays the last three minutes of data, data that is older than three minutes may also be discarded if it will no longer be of use. Analysis aided by: https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure
+		In this case, it is truly up to the target to decide whether or not this issue truly needs to be remedied for the purposes of this web application. That being said, to address this vulnerability, the target can encrypt all data inputs (using javascript) as they are added to their respective collections within the database. As the application only displays the last three minutes of data, data that is older than three minutes may also be discarded if it will no longer be of use. Analysis aided by OWASP.
 	</p>
 
 	<h3>5. Conclusion</h3>
 	<p>
-		The target, Vichka Fonarev, should take steps to remedy the Database Injection vulnerabiity immediately as this vulnerability is the highest-priority/highest-severity issue that was discovered. By remedying this vulnerability, the target will reduce the severity of not only the potential issues discussed regarding Database Injection, but also their exposure to the second vulnerability: XSS. This is because prevention of database injection makes a "stored" XSS attack much more difficult, if not impossible, to execute on the target's application. Next, the target should take the aforementioned steps to better protect against XSS attacks. In addition to what was mentioned, the target may want to replace any symbols that may be misinterpreted as parts of commands (i.e. <, >, etc.) with text (i.e. &amp;lt;,&amp;gt;, etc.)
+		The target, Vichka Fonarev, should take steps to remedy the Database Injection vulnerabiity immediately as this vulnerability is the highest-priority/highest-severity issue that was discovered. By remedying this vulnerability, the target will reduce the severity of not only the potential issues discussed regarding Database Injection, but also their exposure to the second vulnerability: XSS. This is because prevention of database injection makes a "stored" XSS attack much more difficult, if not impossible, to execute on the target's application. Next, the target should take the aforementioned steps to better protect against XSS attacks. In addition to what was mentioned, the target may want to replace any symbols that may be misinterpreted as parts of commands (i.e. <, >, etc.) with text (i.e. &amp;lt;,&amp;gt;, etc.) The CORS error should also be addressed even though it is of lower priority. Lastly, the addressng of the Sensitive Data Exposure error is, again, up to the discretion of the target as ignoring it is unlikely to harm the integrity of the application or its users. That being said, it is always better to be safe than sorry.
 	</p>
 
 	<h2>6. References</h3>
-	<p>https://tuftsdev.github.io/WebProgramming/notes/web_security.html</p>
-	<p>https://www.owasp.org/index.php/Top_10_2013-Top_10</p>
-	<p>https://www.owasp.org/index.php/Content_Security_Policy</p>
-	<p>https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure</p>
-	<p>https://www.sans.org/top25-software-errors/</p>
-	<p>https://www.softwaretestinghelp.com/javascript-injection-tutorial/</p>
-	<p>https://www.veracode.com/security/sql-injection</p>
+	<ul>
+		<li>https://tuftsdev.github.io/WebProgramming/notes/web_security.html</li>
+		<li>https://www.owasp.org/index.php/Top_10_2013-Top_10</li>
+		<li>https://www.owasp.org/index.php/Content_Security_Policy</li>
+		<li>https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure</li>
+		<li>https://www.sans.org/top25-software-errors/</li>
+		<li>https://www.softwaretestinghelp.com/javascript-injection-tutorial/</li>
+		<li>https://www.veracode.com/security/sql-injection</li>
+	</ul>
 
 
 </body>
