@@ -9,80 +9,78 @@
 <body>
 
 	<h1>Security Assessment</h1>
-	<h2>Security Consultant: Ben Bornstein</h2>
-	<h2>Target: Vichka Fonarev</h2>
+	<h2 class=subtitle>Security Consultant: Ben Bornstein</h2>
+	<h2 class=subtitle>Target: Vichka Fonarev</h2>
 
-	<h3>1. Introduction</h3>
+	<h2>1. Introduction</h3>
 	<p>
 		I was hired to assess the security of the target's application. The application is used in conjunction with a private car service. The client-side displays a map of passengers and vehicles and enables the submission of location data regarding either vehicles or passengers, depending on the user's status as one or the other. The application allows passengers to find nearby vehicles which can pick them up, and alternatively it allows drivers/vehicles to find nearby passengers which they may be able to service. It takes a username, latitude, and longitude as inputs and returns the usernames, latitudes, and longitudes of nearby passengers/vehicles that were active within the last three minutes.
 	</p>
 
-	<h3>2. Methodology</h3>
+	<h2>2. Methodology</h3>
 	<p>
 		In pen testing the application, I utilized curl in conjunction with a two-step method that was recommended by Ming Chow. After conducting initial research on types of attacks and how one might test for the associated vulnerabilities, I utilized curl to send information to the target's MongoDB and then used the target's GET pathways to test for additional vulnerabilities. In other words, I conducted a black box test first. Upon completing this, I obtained the target's source code to confirm the results of my black box testing, in other words known as a white box test. This two step method (1. black box test 2. white box test) is how I approached my assessment. 
 	</p>
 
-	<h3>3. Abstract of Findings</h3>
+	<h2>3. Abstract of Findings</h3>
 	<p>
 		Database injection; XSS
 	</p>
 
-	<h3>4. Issues</h3>
+	<h2>4. Issues</h3>
 	<p class=issueheading>ISSUE 1: DATABASE INJECTION</p>
-	<p class=subheading>Location</p>
+	<p class=subheading>Location:</p>
 	<p class=description>
 		This issue appears in the MongoDB (MongoLab) used in conjunction with heroku (or, if testing locally, in the local MongoDB). Within the code, the problem area is within the POST route (/rides) as this is where user inputs are taken in. 
 	</p>
-	<p class=subheading>Severity: HIGH</p>
+	<p class=subheading>Severity:</p>
 	<p class=description>
 		The severity level of this vulnerability is HIGH because injection of hostile code into a database may result in the loss or corruption of stored data, as well as a complete takeover of the host, potentially. This vulnerability, after all, allows bad actors to inject any sort of script into the database. This vulnerability may also open the application up to other vulnerabilities, such as Cross-Site Scripting (XSS).
 	</p>
-	<p class=subheading>Issue Description</p>
+	<p class=subheading>Issue Description:</p>
 	<p class=description>
 		I found this issue by black box testing the POST route with curl. This route takes in a user-inputted username, latitude, and longitude, as mentioned previously. When inputting the username field, one can pass a script through as a username. I was able to confirm this issue by accessing the target's mongolab, where the script was successfully stored. Please see the images in the next subheading for more context. I was aided in my testing by the following resource: https://www.softwaretestinghelp.com/javascript-injection-tutorial/
 	</p>
-	<p class=subheading>Proof of Vulnerability</p>
+	<p class=subheading>Proof of Vulnerability:</p>
 	<p class=description>
 		<img
-			src="a4_curl_injection.png" alt="terminal_curl_code"/>
+			src="a4_curl_injection.png" alt="injection_curl_proof"/>
 	</p>
 	<p class=description>
 		<img
-			src="a4_mongolab_proof.png" alt="target_mongolab_proof"/>
+			src="a4_mongolab_proof.png" alt="injection_mongolab_proof"/>
 	</p>
-	<p class=subheading>Resolution</p>
+	<p class=subheading>Resolution:</p>
 	<p class=description>
 		To protect against exploitation of such a vulnerability, the user may do the following (aided by https://www.owasp.org/index.php/Top_10_2013-A1-Injection and https://tuftsdev.github.io/WebProgramming/notes/web_security.html): 1) properly implement escaping as to prevent interpretation of code included in inputs (i.e. username should only take in reasonable USERNAMES; it should not interpret javascript syntax) 2) stricter whitelist input validation 3) avoid use of interpreters/APIs that utilize API with interpreters.
 	</p>
 
 	</br>
-	</br>
 
-	<p class=issueheading>ISSUE 2: XSS</p>
-	<p class=subheading>Location</p>
+	<p class=issueheading>ISSUE 2: Cross-Site Scripting (XSS)</p>
+	<p class=subheading>Location:</p>
 	<p class=description>
 		This issue stacks upon the Database Injection issue (the first vulnerability allows for the exploitation of the second). It appears in the GET /passenger.json route within index.js, as well as in its corresponding URL, https://stormy-escarpment-32696.herokuapp.com/passenger.json. 
 	</p>
-	<p class=subheading>Severity: MEDIUM</p>
+	<p class=subheading>Severity:</p>
 	<p class=description>
 		The severity level of this vulnerability is MEDIUM due to a combination of its prevalence and potential impact. According to OWASP's 2013 Top 10 List (https://www.owasp.org/index.php/Top_10_2013-A3-Cross-Site_Scripting_(XSS)), XSS is the most common web application security flaw. Per the Top 10 List as well as the COMP20 supplementary notes on Web Security (https://tuftsdev.github.io/WebProgramming/notes/web_security.html), bad actors may utilize an XSS vulnerability to hijack user sessions, redirect users to malicious sites, steal cookie information, and, as Ming put it, just display annoying messages to users. That being said, this XSS vulnerability allows for "stored" XSS, which is considered to be the more dangerous of the two XSS types (the other being "reflected") because the previously-stored data persists.
 	</p>
-	<p class=subheading>Issue Description</p>
+	<p class=subheading>Issue Description:</p>
 	<p class=description>
 		I found this issue by black box testing the previously mentioned GET route. This involved inputting usernames which referenced javascript code that was previously injected into the database via the Database Injection vulnerability. By referencing this "username" script, the code is executed. In the case of my testing, I referenced a username containing a script which displays an alert box containing the word "hacked".
 	</p>
-	<p class=subheading>Proof of Vulnerability</p>
+	<p class=subheading>Proof of Vulnerability:</p>
 	<p class=description>
 		<img
-			src="a4_XSS_alert.png" alt="browser_proof"/>
+			src="a4_XSS_alert.png" alt="xss_browser_proof"/>
 	</p>
 	</p>
-	<p class=subheading>Resolution</p>
+	<p class=subheading>Resolution:</p>
 	<p class=description>
 		Per OWASP, XSS vulnerabilities can typically be resolved by properly escaping untrusted data dependent on where the data will be placed (i.e. data to be inputted into the HTML body, an attribute, a script, etc.). Whitelists also help protect against such attacks; while the target had a whitelist for vehicle inputs, there was no whitelist for passenger inputs and, as a result, the application became open to this vulnerability. OWASP also mentions the potential to protect against XSS attacks through the use of auto-sanitization libraries that assist in ensuring that user inputs comply with the application's rules. Additionally, OWASP points to the implementation of Content Security Policy (CSP), which is a W3C specification that allows restriction of resource loading; one of CSP's directives focuses on the prevention of reflected XSS, though there is no explicit mention of protection against stored XSS attacks (https://www.owasp.org/index.php/Content_Security_Policy).
 	</p>
 
-	</br>
 	</br>
 
 	<p class=issueheading>ISSUE 3: Security Misconfiguration</p>
@@ -90,33 +88,63 @@
 	<p class=description>
 		This issue was found in lines 35-39 of the target's index.js file. While it falls under Security Misconfiguration in OWASP's Top 10 list, the vulnerability in question pertains to Cross-Origin Resource Sharing (CORS).
 	</p>
-	<p class=subheading>Severity: LOW</p>
+	<p class=subheading>Severity:</p>
 	<p class=description>
 		The severity of this vulnerability is LOW due to the nature of the data that is at risk of compromise in the scope of the target's application. In general, a CORS vulnerability of this nature may vary in severity due to the ability for bad actors to obtain sensitive information by exploiting it and the application's user(s). Fortunately, the only data at risk of compromise here is the current location and name of a passenger or vehicle at a particular time, so, in my opinion, this issue is of a lower priority.
 	</p>
-	<p class=subheading>Issue Description</p>
+	<p class=subheading>Issue Description:</p>
 	<p class=description>
-		As mentioned previously the issue was found in lines 35-39 of the target's index.js file. These lines concern CORS and, specifically, they involve the setting of "Access-Control-Allow-Origin" to "*". This is generally problematic because setting access control to the wildcard * essentially makes resources public.
+		As mentioned previously the issue was found in lines 35-39 of the target's index.js file. These lines concern CORS and, specifically, they involve the setting of "Access-Control-Allow-Origin" to "*". This is generally problematic because setting access control to the wildcard character "*" essentially makes resources public.
 	</p>
-	<p class=subheading>Proof of Vulnerability</p>
+	<p class=subheading>Proof of Vulnerability:</p>
 	<p class=description>
 		<img
 			src="a4_CORS_code.png" alt="CORS_code"/>
 	</p>
-	<p class=subheading>Resolution</p>
+	<p class=subheading>Resolution:</p>
 	<p class=description>
-		Text here
+		To resolve this issue, it may be best to reconfigure "Access-Control-Allow-Origin" and set it solely to domains that the target trusts. This would prevent the application from accepting requests/sharing resources with malicious websites.
+	</p>
+
+	</br>
+
+	<p class=issueheading>ISSUE 4: Sensitive Data Exposure</p>
+	<p class=subheading>Location</p>
+	<p class=description>
+		This issue was found in the POST /rides within the target's index.js file as this is where inputs are taken in.
+	</p>
+	<p class=subheading>Severity:</p>
+	<p class=description>
+		The severity of this vulnerability is, again, LOW due to the nature of the data that is at risk of compromise in the scope of the target's application. Generally speaking, the severity of such an issue may vary from LOW to HIGH depending on the type of data being stored and, perhaps, the risk tolerance of the customer base. In this case, users risk bad actors obtaining their username and location coordinates at a certain point in time. For most, this would likely not matter much.
+	</p>
+	<p class=subheading>Issue Description:</p>
+	<p class=description>
+		This issue was discovered after conducting the necessary testing to obtain Issues 1 and 2. After these two issues were found and diagnosed, it was clear that the data being stored was not being encrypted in any way. As a result, users risk the interception/exposure of this data by bad actors.
+	</p>
+	<p class=subheading>Proof of Vulnerability:</p>
+	<p class=description>
+		<img
+			src="a4_exposure_proof2.png" alt="data_exposure_mongolab"/>
+	</p>
+	<p class=description>
+		<img
+			src="a4_exposure_proof.png" alt="data_exposure_browser"/>
+	</p>
+	<p class=subheading>Resolution:</p>
+	<p class=description>
+		In this case, it is truly up to the target to decide whether or not this issue truly needs to be remedied for the purposes of this web application. That being said, to address this vulnerability, the target can encrypt all data inputs (using javascript) as they are added to their respective collections within the database. As the application only displays the last three minutes of data, data that is older than three minutes may also be discarded if it will no longer be of use. Analysis aided by: https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure
 	</p>
 
 	<h3>5. Conclusion</h3>
 	<p>
-		Text here
+		The target, Vichka Fonarev, should take steps to remedy the Database Injection vulnerabiity immediately as this vulnerability is the highest-priority/highest-severity issue that was discovered. By remedying this vulnerability, the target will reduce the severity of not only the potential issues discussed regarding Database Injection, but also their exposure to the second vulnerability: XSS. This is because prevention of database injection makes a "stored" XSS attack much more difficult, if not impossible, to execute on the target's application. Next, the target should take the aforementioned steps to better protect against XSS attacks. In addition to what was mentioned, the target may want to replace any symbols that may be misinterpreted as parts of commands (i.e. <, >, etc.) with text (i.e. &amp;lt;,&amp;gt;, etc.)
 	</p>
 
-	<h3>6. References</h3>
+	<h2>6. References</h3>
 	<p>https://tuftsdev.github.io/WebProgramming/notes/web_security.html</p>
 	<p>https://www.owasp.org/index.php/Top_10_2013-Top_10</p>
-	https://www.owasp.org/index.php/Content_Security_Policy
+	<p>https://www.owasp.org/index.php/Content_Security_Policy</p>
+	<p>https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure</p>
 	<p>https://www.sans.org/top25-software-errors/</p>
 	<p>https://www.softwaretestinghelp.com/javascript-injection-tutorial/</p>
 	<p>https://www.veracode.com/security/sql-injection</p>
